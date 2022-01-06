@@ -25,12 +25,17 @@ rapid_answers = [{'text' : '👋 Hola. Gracias por comunicarte con el bot oficia
 ]
 
 COMMANDS_TEXT = {
-	'duda' : '👨‍🏫 Si tienes una duda lingüística, plantéanosla. Al formularla, recuerda ofrecernos contexto. Te responderemos lo antes posible.',
+	'duda' : '👨‍🏫 Si tienes una duda lingüística, plantéanosla. Al formularla, recuerda ofrecernos contexto y escribir al inicio la etiqueta #duda.',
 	'participar': '🔷 Si deseas ser concursante de «Pasapalabra», envíanos tu nombre de usuario para inscribirte en la «Silla Azul». 🔠 Una vez se acerque la fecha de esta dinámica, te avisaremos.',
-	'sugerencias': '📝 Envíanos sugerencias para mejorar nuestro trabajo. Siempre serán bien recibidas.\n\n✍️ Puedes hacernos propuestas de temas para que nuestros panelistas de «Escriba y lea» los descrifren.',
+	'sugerencias': '📝 Envíanos sugerencias para mejorar nuestro trabajo. Siempre serán bien recibidas. Recuerda usar la etiqueta #sugerencias en tu mensaje.\n\n✍️ Puedes hacernos propuestas de temas para que nuestros panelistas de «Escriba y lea» los descrifren.',
 	'ayuda' : '📕 Este es nuestro <a href="https://telegra.ph/Vademécum-10-15">vademécum</a>, un libro de poco volumen y fácil manejo para conocer mejor qué es el proyecto @Buen_Idioma.',
 	'podcast' : '🎧 En Anchor podrás escuchar todas las emisiones del pódcast «Píldoras Buen Idioma».',
 	'blog' : '💻 En nuestro blog podrás encontrar recomendaciones lingüísticas sobre el uso correcto del español actual.'
+}
+
+USER_FEEDBACK = {
+	'duda': '👌 Gracias por formularnos esta consulta. Te responderemos lo antes posible.',
+	'sugerencias': '👌 Gracias por hacernos esta sugerencia. La valoraremos y tendremos en cuenta. Saludos.'
 }
 
 COMMANDS_MARKUP = {
@@ -56,6 +61,7 @@ async def send_duda(message: types.Message, text: str, command: str):
 	inline_kb.row(types.InlineKeyboardButton('Respuesta Rápida', switch_inline_query_current_chat=''))
 	ans_text = f'<a href="tg://user?id={message.from_user.id}" >{message.from_user.first_name}</a> | #{command}\n\n{text}'
 	await bot.send_message(answerer_id, ans_text, reply_markup=inline_kb, parse_mode='HTML')
+	await bot.send_message(message.from_user.id, USER_FEEDBACK[command])
 
 @bot.message_handler(commands=[x for x in COMMANDS_TEXT])
 async def handle_commands(message: types.Message):
