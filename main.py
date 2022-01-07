@@ -127,7 +127,7 @@ async def handle_check_uncheck_callback(q : types.CallbackQuery):
 
 @bot.callback_query_handler(lambda q: q.data.startswith('solved'))
 async def handle_check_uncheck_callback(q : types.CallbackQuery):
-	await bot.edit_message_text(q.message.html_text + '\n\n#DudaResuelta', q.message.chat.id, q.message.id, reply_markup=None)
+	await bot.edit_message_text(q.message.html_text + '\n\n#DudaResuelta', q.message.chat.id, q.message.id, reply_markup=None, parse_mode='HTML')
 
 	splitted = q.data.split('_')
 	chat_id = int(splitted[1])
