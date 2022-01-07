@@ -47,7 +47,7 @@ COMMANDS_MARKUP = {
 	'blog' : types.InlineKeyboardMarkup([[types.InlineKeyboardButton('👨🏻‍💻 Visitar el blog', url='https://blogbuenidioma.blogspot.com/?m=1')]])
 }
 
-START_TEXT = '<b>¡Hola, {}! 👋 Este es el bot oficial del canal @Buen_Idioma.</b>\n\n📢 Para comunicarte con nosotros presiona uno de los comandos del «Menú».\n\n⚠️ Aquí atendemos dudas sobre el uso correcto del español actual y recibimos sugerencias para mejorar nuestro trabajo. \n\n📍 Únete al grupo @DudasBuenIdioma y plantéanos tus dudas por allá cuando quieras. No olvides la etiqueta #duda.\n\n<b>👌 Te responderemos lo antes posible. Muchas gracias.</b>'
+START_TEXT = '<b>¡Hola, {}! 👋 Este es el bot oficial del canal @Buen_Idioma.</b>\n\n📢 Para comunicarte con nosotros presiona uno de los comandos del «Menú».\n\n⚠️ Aquí atendemos dudas sobre el uso correcto del español actual y recibimos sugerencias para mejorar nuestro trabajo. \n\n📍 También puedes unirte al grupo @DudasBuenIdioma y cuando quieras nos planteas tus dudas por allá. No olvides la etiqueta #duda.\n\n<b>🤖 Las consultas son atendidas por personas, así que espera con calma. Te responderemos lo antes posible. Muchas gracias.</b>'
 
 rapid_answers_inline_results = []
 
