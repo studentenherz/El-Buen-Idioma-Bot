@@ -65,7 +65,7 @@ async def send_duda(message: types.Message, text: str, command: str):
 
 @bot.message_handler(commands=[x for x in COMMANDS_TEXT])
 async def handle_commands(message: types.Message):
-	splitted = message.text[1:].split(' ', 1)
+	splitted = message.html_text[1:].split(' ', 1)
 	command = splitted[0]
 	if command in ['duda', 'sugerencias'] and len(splitted) > 1:
 		await send_duda(message, splitted[1], command)
@@ -79,7 +79,7 @@ async def handle_messages(message : types.Message):
 
 		for hashtag in ['duda', 'sugerencias']:
 			if f'#{hashtag}' in message.text:
-				await send_duda(message, message.text, hashtag)
+				await send_duda(message, message.html_text, hashtag)
 	elif message.reply_to_message:
 		# Answerer responds )
 
@@ -105,7 +105,7 @@ async def handle_messages(message : types.Message):
 
 						# Sends response
 						feedback_button = types.InlineKeyboardMarkup([[types.InlineKeyboardButton('🕹 ¡Gracias!, duda resuelta.', callback_data=f'solved_{original.chat.id}_{original.id}_{count + 1}_{check_uncheck}_{chat_id}_{message_id}')]])
-						await bot.send_message(chat_id, message.text, reply_to_message_id=message_id, reply_markup=feedback_button if '#BuenIdiomaResponde' in message.text else None)
+						await bot.send_message(chat_id, message.html_text, reply_to_message_id=message_id, reply_markup=feedback_button if '#BuenIdiomaResponde' in message.text else None, parse_mode='HTML')
 			
 			# Edit answerer message to increment counter
 			await bot.edit_message_reply_markup(original.chat.id, original.id, reply_markup=types.InlineKeyboardMarkup(inline_kb))
@@ -127,7 +127,7 @@ async def handle_check_uncheck_callback(q : types.CallbackQuery):
 
 @bot.callback_query_handler(lambda q: q.data.startswith('solved'))
 async def handle_check_uncheck_callback(q : types.CallbackQuery):
-	await bot.edit_message_text(q.message.text + '\n\n#DudaResuelta', q.message.chat.id, q.message.id, reply_markup=None)
+	await bot.edit_message_text(q.message.html_text + '\n\n#DudaResuelta', q.message.chat.id, q.message.id, reply_markup=None)
 
 	splitted = q.data.split('_')
 	chat_id = int(splitted[1])
