@@ -6,8 +6,7 @@ from credentials import BOT_TOKEN, answerer_id
 
 bot = AsyncTeleBot(BOT_TOKEN)
 
-rapid_answers = [{'text' : '👋 Hola. Gracias por comunicarte con el bot oficial del canal @Buen_Idioma. ¿Tienes una duda lingüística? Plantéanosla.', 
-'title' : 'Saludo'}, 
+rapid_answers = [
 {'text' : '📢 Para poder darte una respuesta ajustada a tu duda conviene que, al formularla, nos ofrezcas contexto y, en su caso, información sobre lo que se quiere expresar.', 
 'title' : 'Contexto'}, 
 {'text' : '📚 Recuerda que esta duda puedes resolverla si consultas el «Diccionario de la lengua española» mediante el bot @dleraebot.', 
