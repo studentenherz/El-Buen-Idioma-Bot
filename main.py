@@ -26,7 +26,7 @@ rapid_answers = [{'text' : '👋 Hola. Gracias por comunicarte con el bot oficia
 
 COMMANDS_TEXT = {
 	'duda' : '👨‍🏫 Si tienes una duda lingüística, plantéanosla. Al formularla, recuerda ofrecernos contexto y escribir al inicio la etiqueta #duda.',
-	'participar': '🔷 Si deseas ser concursante de «Pasapalabra», envíanos tu nombre de usuario para inscribirte en la «Silla Azul». 🔠 Una vez se acerque la fecha de esta dinámica, te avisaremos.',
+	'participar': '🔷 Si deseas ser concursante de «Pasapalabra», presiona el botón de abajo para inscribirte en la «Silla Azul». 🔠 Una vez se acerque la fecha de esta dinámica, te avisaremos.',
 	'sugerencias': '📝 Envíanos sugerencias para mejorar nuestro trabajo. Siempre serán bien recibidas. Recuerda usar la etiqueta #sugerencias en tu mensaje.\n\n✍️ Puedes hacernos propuestas de temas para que nuestros panelistas de «Escriba y lea» los descrifren.',
 	'ayuda' : '📕 Este es nuestro <a href="https://telegra.ph/Vademécum-10-15">vademécum</a>, un libro de poco volumen y fácil manejo para conocer mejor qué es el proyecto @Buen_Idioma.',
 	'podcast' : '🎧 En Anchor podrás escuchar todas las emisiones del pódcast «Píldoras Buen Idioma».',
@@ -40,7 +40,7 @@ USER_FEEDBACK = {
 
 COMMANDS_MARKUP = {
 	'duda' :  None,
-	'participar' : None,
+	'participar' : types.InlineKeyboardMarkup([[types.InlineKeyboardButton('🤔 ¿Qué es la «Silla Azul»?', url='https://t.me/Buen_Idioma/3532')],[types.InlineKeyboardButton('¡Quiero participar!', callback_data='participar') ]]),
 	'sugerencias' : None,
 	'ayuda' : None,
 	'podcast' : types.InlineKeyboardMarkup([[types.InlineKeyboardButton('🎧 Escuchar en Anchor', url='https://anchor.fm/buenidioma')]]),
@@ -57,7 +57,7 @@ async def handle_start(message: types.Message):
 
 async def send_duda(message: types.Message, text: str, command: str):
 	inline_kb = types.InlineKeyboardMarkup()
-	inline_kb.row(types.InlineKeyboardButton('⤷ 0', callback_data=f'fwd_{message.chat.id}_{message.id}'), types.InlineKeyboardButton('☑️', callback_data=f'check'))
+	inline_kb.row(types.InlineKeyboardButton('⤷ 0', callback_data=f'fwd_{message.chat.id}_{message.id}'), types.InlineKeyboardButton('❔☑️', callback_data=f'check'))
 	inline_kb.row(types.InlineKeyboardButton('Respuesta Rápida', switch_inline_query_current_chat=''))
 	ans_text = f'<a href="tg://user?id={message.from_user.id}" >{message.from_user.first_name}</a> | #{command}\n\n{text}'
 	await bot.send_message(answerer_id, ans_text, reply_markup=inline_kb, parse_mode='HTML')
@@ -75,22 +75,39 @@ async def handle_commands(message: types.Message):
 @bot.message_handler(chat_types=['private'])
 async def handle_messages(message : types.Message):
 	if message.from_user.id != answerer_id:
+		# User asks #duda or sends #sugerencias
+
 		for hashtag in ['duda', 'sugerencias']:
 			if f'#{hashtag}' in message.text:
 				await send_duda(message, message.text, hashtag)
 	elif message.reply_to_message:
+		# Answerer responds )
+
 		original = message.reply_to_message
+
+		# Look for data to send reply inside the inlineKeyboard
 		if original.reply_markup:
 			inline_kb = original.reply_markup.keyboard
+
 			for row in inline_kb:
 				for button in row:
-					if button.callback_data and button.callback_data.startswith('fwd'):
+					if button.callback_data and button.callback_data == 'check' or button.callback_data == 'uncheck':
+						check_uncheck = button.callback_data
+
+			for row in inline_kb:
+				for button in row:
+					if button.callback_data and button.callback_data.startswith('fwd'): # counter and data holder
 						splitted = button.callback_data.split('_')
 						chat_id = splitted[1]
 						message_id = splitted[2]
-						await bot.send_message(chat_id, message.text, reply_to_message_id=message_id)
 						count = int(button.text[1:])
 						button.text = f'⤷ {count + 1}'
+
+						# Sends response
+						feedback_button = types.InlineKeyboardMarkup([[types.InlineKeyboardButton('🕹 ¡Gracias!, duda resuelta.', callback_data=f'solved_{original.chat.id}_{original.id}_{count + 1}_{check_uncheck}_{chat_id}_{message_id}')]])
+						await bot.send_message(chat_id, message.text, reply_to_message_id=message_id, reply_markup=feedback_button if '#BuenIdiomaResponde' in message.text else None)
+			
+			# Edit answerer message to increment counter
 			await bot.edit_message_reply_markup(original.chat.id, original.id, reply_markup=types.InlineKeyboardMarkup(inline_kb))
 
 @bot.callback_query_handler(lambda q: q.data.startswith('fwd'))
@@ -100,13 +117,44 @@ async def handle_fwd_callback(q : types.CallbackQuery):
 @bot.callback_query_handler(lambda q: q.data == 'check' or q.data == 'uncheck')
 async def handle_check_uncheck_callback(q : types.CallbackQuery):
 	inline_kb = q.message.reply_markup.keyboard
+	# Search for the check button
 	for row in inline_kb:
 				for button in row:
 					if button.callback_data == 'check' or button.callback_data == 'uncheck':
-						button.text = '✅' if button.callback_data == 'check' else '☑️'
+						button.text = button.text[0] + ('✅' if button.callback_data == 'check' else '☑️')
 						button.callback_data = 'uncheck' if button.callback_data == 'check' else 'check'
-
 	await bot.edit_message_reply_markup(q.message.chat.id, q.message.id, reply_markup=types.InlineKeyboardMarkup(inline_kb))
+
+@bot.callback_query_handler(lambda q: q.data.startswith('solved'))
+async def handle_check_uncheck_callback(q : types.CallbackQuery):
+	await bot.edit_message_text(q.message.text + '\n\n#DudaResuelta', q.message.chat.id, q.message.id, reply_markup=None)
+
+	splitted = q.data.split('_')
+	chat_id = int(splitted[1])
+	message_id = int(splitted[2])
+	count = splitted[3]
+	check_uncheck = splitted[4]
+	callback_chat = splitted[5]
+	callback_message = splitted[6]
+
+	inline_kb = types.InlineKeyboardMarkup()
+	inline_kb.row(types.InlineKeyboardButton(f'⤷ {count}', callback_data=f'fwd_{callback_chat}_{callback_message}'), types.InlineKeyboardButton('✔️' + ('☑️' if check_uncheck == 'check' else '✅'), callback_data=check_uncheck))
+	inline_kb.row(types.InlineKeyboardButton('Respuesta Rápida', switch_inline_query_current_chat=''))
+
+	await bot.answer_callback_query(q.id, '¡Gracias por la retroalimentación!')
+	await bot.edit_message_reply_markup(chat_id, message_id, reply_markup=inline_kb)
+	
+
+@bot.callback_query_handler(lambda q: q.data == 'participar')
+async def handle_participar_callback(q : types.CallbackQuery):
+	message = q.message
+	ans_text = f'<a href="tg://user?id={q.from_user.id}" >{q.from_user.first_name}</a> | #participar'
+	await bot.send_message(answerer_id, ans_text, parse_mode='HTML')
+
+	await bot.edit_message_text('¡Anotado! Ya estás en la lista.', reply_markup=None, chat_id=message.chat.id, message_id=message.id)
+	await bot.answer_callback_query(q.id)
+
+
 
 @bot.inline_handler(lambda q: True)
 async def hanlde_inline(q: types.InlineQuery):
