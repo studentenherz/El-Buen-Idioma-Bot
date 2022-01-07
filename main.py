@@ -166,9 +166,9 @@ async def handle_participar_callback(q : types.CallbackQuery):
 @bot.inline_handler(lambda q: True)
 async def hanlde_inline(q: types.InlineQuery):
 	if (q.from_user.id == answerer_id):
-		await bot.answer_inline_query(q.id, rapid_answers_inline_results, cache_time=0, is_personal=True)
+		await bot.answer_inline_query(q.id, rapid_answers_inline_results, is_personal=True)
 	else:
-		await bot.answer_inline_query(q.id, [], switch_pm_parameter='_', switch_pm_text='Preguntar a través del bot.')
+		await bot.answer_inline_query(q.id, [], switch_pm_parameter='_', switch_pm_text='Preguntar a través del bot.', is_personal=True)
 
 if __name__ == '__main__':
 	for i, answer in enumerate(rapid_answers):
