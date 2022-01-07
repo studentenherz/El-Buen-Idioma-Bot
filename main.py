@@ -25,9 +25,9 @@ rapid_answers = [{'text' : '👋 Hola. Gracias por comunicarte con el bot oficia
 ]
 
 COMMANDS_TEXT = {
-	'duda' : '👨‍🏫 Si tienes una duda lingüística, plantéanosla. Al formularla, recuerda ofrecernos contexto y escribir al inicio la etiqueta #duda.',
+	'duda' : '👨‍🏫 Si tienes una duda lingüística, plantéanosla en un solo mensaje. Al formularla, recuerda ofrecernos contexto y escribir la etiqueta #duda.',
 	'participar': '🔷 Si deseas ser concursante de «Pasapalabra», presiona el botón de abajo para inscribirte en la «Silla Azul». 🔠 Una vez se acerque la fecha de esta dinámica, te avisaremos.',
-	'sugerencias': '📝 Envíanos sugerencias para mejorar nuestro trabajo. Siempre serán bien recibidas. Recuerda usar la etiqueta #sugerencias en tu mensaje.\n\n✍️ Puedes hacernos propuestas de temas para que nuestros panelistas de «Escriba y lea» los descrifren.',
+	'sugerencia': '📝 Envíanos sugerencias para mejorar nuestro trabajo. Siempre serán bien recibidas. Redáctala en un solo mensaje y recuerda incluir la etiqueta #sugerencia.\n\n✍️ Puedes hacernos propuestas de temas para que nuestros panelistas de «Escriba y lea» los descrifren.',
 	'ayuda' : '📕 Este es nuestro <a href="https://telegra.ph/Vademécum-10-15">vademécum</a>, un libro de poco volumen y fácil manejo para conocer mejor qué es el proyecto @Buen_Idioma.',
 	'podcast' : '🎧 En Anchor podrás escuchar todas las emisiones del pódcast «Píldoras Buen Idioma».',
 	'blog' : '💻 En nuestro blog podrás encontrar recomendaciones lingüísticas sobre el uso correcto del español actual.'
@@ -35,19 +35,21 @@ COMMANDS_TEXT = {
 
 USER_FEEDBACK = {
 	'duda': '👌 Gracias por formularnos esta consulta. Te responderemos lo antes posible.',
-	'sugerencias': '👌 Gracias por hacernos esta sugerencia. La valoraremos y tendremos en cuenta. Saludos.'
+	'sugerencia': '👌 Gracias por hacernos esta sugerencia. La valoraremos y tendremos en cuenta. Saludos.'
 }
 
 COMMANDS_MARKUP = {
 	'duda' :  None,
 	'participar' : types.InlineKeyboardMarkup([[types.InlineKeyboardButton('🤔 ¿Qué es la «Silla Azul»?', url='https://t.me/Buen_Idioma/3532')],[types.InlineKeyboardButton('¡Quiero participar!', callback_data='participar') ]]),
-	'sugerencias' : None,
+	'sugerencia' : None,
 	'ayuda' : None,
 	'podcast' : types.InlineKeyboardMarkup([[types.InlineKeyboardButton('🎧 Escuchar en Anchor', url='https://anchor.fm/buenidioma')]]),
 	'blog' : types.InlineKeyboardMarkup([[types.InlineKeyboardButton('👨🏻‍💻 Visitar el blog', url='https://blogbuenidioma.blogspot.com/?m=1')]])
 }
 
-START_TEXT = '<b>¡Hola, {}! 👋 Este es el bot oficial del canal @Buen_Idioma.</b>\n\n📢 Para comunicarte con nosotros presiona uno de los comandos del «Menú».\n\n⚠️ Aquí atendemos dudas sobre el uso correcto del español actual y recibimos sugerencias para mejorar nuestro trabajo. \n\n📍 También puedes unirte al grupo @DudasBuenIdioma y cuando quieras nos planteas tus dudas por allá. No olvides la etiqueta #duda.\n\n<b>🤖 Las consultas son atendidas por personas, así que espera con calma. Te responderemos lo antes posible. Muchas gracias.</b>'
+START_TEXT = '<b>¡Hola, {}! 👋 Este es el bot oficial del canal @Buen_Idioma.</b>\n\n📢 Para comunicarte con nosotros presiona uno de los comandos del «Menú».\n\n⚠️ Aquí atendemos dudas sobre el uso correcto del español actual y recibimos sugerencia para mejorar nuestro trabajo. \n\n📍 También puedes unirte al grupo @DudasBuenIdioma y cuando quieras nos planteas tus dudas por allá. No olvides la etiqueta #duda.\n\n<b>🤖 Las consultas son atendidas por personas, así que espera con calma. Te responderemos lo antes posible. Muchas gracias.</b>'
+
+DEAD_END_MESSAGE = '#️⃣ Para poder responderte, debes incluir la etiqueta #duda o #sugerencia según el caso. Recuerda también escribirlo todo en un solo mensaje. Disculpa las molestias ocasionadas.'
 
 rapid_answers_inline_results = []
 
@@ -56,9 +58,12 @@ async def handle_start(message: types.Message):
 	await bot.send_message(message.chat.id, START_TEXT.format(message.from_user.first_name), parse_mode='HTML')
 
 async def send_duda(message: types.Message, text: str, command: str):
-	inline_kb = types.InlineKeyboardMarkup()
-	inline_kb.row(types.InlineKeyboardButton('⤷ 0', callback_data=f'fwd_{message.chat.id}_{message.id}'), types.InlineKeyboardButton('❔☑️', callback_data=f'check'))
-	inline_kb.row(types.InlineKeyboardButton('Respuesta Rápida', switch_inline_query_current_chat=''))
+	if command == 'duda':
+		inline_kb = types.InlineKeyboardMarkup()
+		inline_kb.row(types.InlineKeyboardButton('⤷ 0', callback_data=f'fwd_{message.chat.id}_{message.id}'), types.InlineKeyboardButton('❔☑️', callback_data=f'check'))
+		inline_kb.row(types.InlineKeyboardButton('Respuesta Rápida', switch_inline_query_current_chat=''))
+	else:
+		inline_kb = None
 	ans_text = f'<a href="tg://user?id={message.from_user.id}" >{message.from_user.first_name}</a> | #{command}\n\n{text}'
 	await bot.send_message(answerer_id, ans_text, reply_markup=inline_kb, parse_mode='HTML')
 	await bot.send_message(message.from_user.id, USER_FEEDBACK[command])
@@ -67,7 +72,7 @@ async def send_duda(message: types.Message, text: str, command: str):
 async def handle_commands(message: types.Message):
 	splitted = message.html_text[1:].split(' ', 1)
 	command = splitted[0]
-	if command in ['duda', 'sugerencias'] and len(splitted) > 1:
+	if command in ['duda', 'sugerencia'] and len(splitted) > 1:
 		await send_duda(message, splitted[1], command)
 	else:
 		await bot.send_message(message.chat.id, COMMANDS_TEXT[command], parse_mode='HTML', reply_markup=COMMANDS_MARKUP[command])
@@ -75,11 +80,13 @@ async def handle_commands(message: types.Message):
 @bot.message_handler(chat_types=['private'])
 async def handle_messages(message : types.Message):
 	if message.from_user.id != answerer_id:
-		# User asks #duda or sends #sugerencias
-
-		for hashtag in ['duda', 'sugerencias']:
+		# User asks #duda or sends #sugerencia
+		for hashtag in ['duda', 'sugerencia']:
 			if f'#{hashtag}' in message.text:
 				await send_duda(message, message.html_text, hashtag)
+				return
+		await bot.send_message(message.chat.id, DEAD_END_MESSAGE)
+		
 	elif message.reply_to_message:
 		# Answerer responds )
 
