@@ -1,6 +1,8 @@
 from telebot.async_telebot import AsyncTeleBot
 from telebot import types
 import asyncio
+from telebot.asyncio_helper import ApiTelegramException
+import logging
 
 from credentials import BOT_TOKEN, answerer_id
 
@@ -111,9 +113,15 @@ async def handle_messages(message : types.Message):
 
 						# Sends response
 						feedback_button = types.InlineKeyboardMarkup([[types.InlineKeyboardButton('🕹 ¡Gracias!, duda resuelta.', callback_data=f'solved_{original.chat.id}_{original.id}_{count + 1}_{check_uncheck}_{chat_id}_{message_id}')]])
-						await bot.send_message(chat_id, message.html_text, reply_to_message_id=message_id, reply_markup=feedback_button if '#BuenIdiomaResponde' in message.text else None, parse_mode='HTML')
-			
-			# Edit answerer message to increment counter
+						try:
+							await bot.send_message(chat_id, message.html_text, reply_to_message_id=message_id, reply_markup=feedback_button if '#BuenIdiomaResponde' in message.text else None, parse_mode='HTML')
+						except ApiTelegramException as e:
+							await bot.send_message(message.chat.id, '😢 El usuario bloqueó el bot.')
+							button.text = f'❌ {count}'
+							# Edit answerer message to increment counter
+							await bot.edit_message_reply_markup(original.chat.id, original.id, reply_markup=types.InlineKeyboardMarkup(inline_kb))
+							raise e
+
 			await bot.edit_message_reply_markup(original.chat.id, original.id, reply_markup=types.InlineKeyboardMarkup(inline_kb))
 
 @bot.callback_query_handler(lambda q: q.data.startswith('fwd'))
@@ -173,4 +181,4 @@ if __name__ == '__main__':
 	for i, answer in enumerate(rapid_answers):
 		rapid_answers_inline_results.append(types.InlineQueryResultArticle(f'{i}', answer['title'], input_message_content=types.InputTextMessageContent(answer['text']), description=answer['text']))
 	
-	asyncio.run(bot.infinity_polling())
+	asyncio.run(bot.infinity_polling(logger_level=logging.WARNING))
