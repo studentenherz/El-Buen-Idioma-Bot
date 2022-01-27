@@ -3,8 +3,13 @@ from telebot import types
 import asyncio
 from telebot.asyncio_helper import ApiTelegramException
 import logging
+from telebot import asyncio_helper
 
-from credentials import BOT_TOKEN, answerer_id
+from credentials import BOT_TOKEN, answerer_id, local_server
+
+if local_server != None:
+	asyncio_helper.API_URL = local_server + "/bot{0}/{1}"
+	asyncio_helper.FILE_URL = local_server
 
 bot = AsyncTeleBot(BOT_TOKEN)
 
