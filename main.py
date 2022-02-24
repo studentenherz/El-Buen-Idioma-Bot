@@ -64,12 +64,10 @@ async def handle_start(message: types.Message):
 	await bot.send_message(message.chat.id, START_TEXT.format(message.from_user.first_name), parse_mode='HTML')
 
 async def send_duda(message: types.Message, text: str, command: str):
-	if command == 'duda':
-		inline_kb = types.InlineKeyboardMarkup()
-		inline_kb.row(types.InlineKeyboardButton('⤷ 0', callback_data=f'fwd_{message.chat.id}_{message.id}'), types.InlineKeyboardButton('❔☑️', callback_data=f'check'))
-		inline_kb.row(types.InlineKeyboardButton('Respuesta Rápida', switch_inline_query_current_chat=''))
-	else:
-		inline_kb = None
+	inline_kb = types.InlineKeyboardMarkup()
+	inline_kb.row(types.InlineKeyboardButton('⤷ 0', callback_data=f'fwd_{message.chat.id}_{message.id}'), types.InlineKeyboardButton('❔☑️', callback_data=f'check'))
+	inline_kb.row(types.InlineKeyboardButton('Respuesta Rápida', switch_inline_query_current_chat=''))
+
 	ans_text = f'<a href="tg://user?id={message.from_user.id}" >{message.from_user.first_name}</a> | #{command}\n\n{text}'
 	await bot.send_message(answerer_id, ans_text, reply_markup=inline_kb, parse_mode='HTML')
 	await bot.send_message(message.from_user.id, USER_FEEDBACK[command])
