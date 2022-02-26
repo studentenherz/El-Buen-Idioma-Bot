@@ -16,7 +16,7 @@ bot = AsyncTeleBot(BOT_TOKEN)
 rapid_answers = [
 {'text' : '📢 Para poder darte una respuesta ajustada a tu duda conviene que, al formularla, nos ofrezcas contexto y, en su caso, información sobre lo que se quiere expresar.', 
 'title' : 'Contexto'}, 
-{'text' : '📚 Recuerda que esta duda puedes resolverla si consultas el «Diccionario de la lengua española» mediante el bot @dleraebot.', 
+{'text' : '📚 Recuerda que esta duda puedes resolverla si consultas el «Diccionario de la lengua española» mediante el bot @dlebot.', 
 'title' : 'Diccionario'}, 
 {'text' : '❌ Lo sentimos, pero solo atendemos dudas sobre el uso correcto del español actual. Su consulta queda fuera de los límites establecidos para este servicio. Esperamos serte de utilidad en otra ocasión.', 
 'title' : 'Duda'}, 
