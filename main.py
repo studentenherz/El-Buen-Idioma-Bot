@@ -97,7 +97,7 @@ COMMANDS_MARKUP = {
     ),
 }
 
-START_TEXT = "<b>¡Hola, {}! 👋 Este es el bot oficial del canal @Buen_Idioma.</b>\n\n📢 Para comunicarte con nosotros presiona uno de los comandos del «Menú».\n\n⚠️ Aquí atendemos dudas sobre el uso correcto del español actual y recibimos sugerencia para mejorar nuestro trabajo. \n\n📍 También puedes unirte al grupo @DudasBuenIdioma y cuando quieras nos planteas tus dudas por allá. No olvides la etiqueta #duda.\n\n<b>🤖 Las consultas son atendidas por personas, así que espera con calma. Te responderemos lo antes posible. Muchas gracias.</b>"
+START_TEXT = "<b>¡Hola, {}! 👋 Este es el bot oficial del canal @BuenIdioma.</b>\n\n📢 Para comunicarte con nosotros presiona uno de los comandos del «Menú».\n\n⚠️ Aquí atendemos dudas sobre el uso correcto del español actual y recibimos sugerencia para mejorar nuestro trabajo. \n\n📍 También puedes unirte al grupo @DudasBuenIdioma y cuando quieras nos planteas tus dudas por allá. No olvides la etiqueta #duda.\n\n<b>🤖 Las consultas son atendidas por personas, así que espera con calma. Te responderemos lo antes posible. Muchas gracias.</b>"
 
 DEAD_END_MESSAGE = "#️⃣ Para poder responderte, debes incluir la etiqueta #duda o #sugerencia según el caso. Recuerda también escribirlo todo en un solo mensaje. Disculpa las molestias ocasionadas."
 
