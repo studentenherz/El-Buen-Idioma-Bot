@@ -76,7 +76,7 @@ COMMANDS_MARKUP = {
             [
                 types.InlineKeyboardButton(
                     "👨🏻‍💻 Visitar el blog",
-                    url="https://blogbuenidioma.blogspot.com/?m=1",
+                    url="https://buenidioma.com",
                 )
             ]
         ]
