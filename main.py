@@ -46,7 +46,6 @@ rapid_answers = [
 
 COMMANDS_TEXT = {
     "duda": "👨‍🏫 Si tienes una duda lingüística, plantéanosla en un solo mensaje. Al formularla, recuerda ofrecernos contexto y escribir la etiqueta #duda.",
-    "participar": "🔷 Si deseas ser concursante de «Pasapalabra», presiona el botón de abajo para inscribirte en la «Silla Azul». 🔠 Una vez se acerque la fecha de esta dinámica, te avisaremos.",
     "sugerencia": "📝 Envíanos sugerencias para mejorar nuestro trabajo. Siempre serán bien recibidas. Redáctala en un solo mensaje y recuerda incluir la etiqueta #sugerencia.\n\n✍️ Puedes hacernos propuestas de temas para que nuestros panelistas de «Escriba y lea» los descrifren.",
     "ayuda": '📕 Este es nuestro <a href="https://telegra.ph/Vademécum-10-15">vademécum</a>, un libro de poco volumen y fácil manejo para conocer mejor qué es el proyecto @Buen_Idioma.',
     "podcast": "🎧 En Anchor podrás escuchar todas las emisiones del pódcast «Píldoras Buen Idioma».",
@@ -60,20 +59,6 @@ USER_FEEDBACK = {
 
 COMMANDS_MARKUP = {
     "duda": None,
-    "participar": types.InlineKeyboardMarkup(
-        [
-            [
-                types.InlineKeyboardButton(
-                    "🤔 ¿Qué es la «Silla Azul»?", url="https://t.me/Buen_Idioma/3532"
-                )
-            ],
-            [
-                types.InlineKeyboardButton(
-                    "¡Quiero participar!", callback_data="participar"
-                )
-            ],
-        ]
-    ),
     "sugerencia": None,
     "ayuda": None,
     "podcast": types.InlineKeyboardMarkup(
@@ -204,9 +189,11 @@ async def handle_messages(message: types.Message):
                                 chat_id,
                                 message.html_text,
                                 reply_to_message_id=message_id,
-                                reply_markup=feedback_button
-                                if "#BuenIdiomaResponde" in message.text
-                                else None,
+                                reply_markup=(
+                                    feedback_button
+                                    if "#BuenIdiomaResponde" in message.text
+                                    else None
+                                ),
                                 parse_mode="HTML",
                             )
                         except ApiTelegramException as e:
@@ -292,21 +279,6 @@ async def handle_check_uncheck_callback(q: types.CallbackQuery):
 
     await bot.answer_callback_query(q.id, "¡Gracias por la retroalimentación!")
     await bot.edit_message_reply_markup(chat_id, message_id, reply_markup=inline_kb)
-
-
-@bot.callback_query_handler(lambda q: q.data == "participar")
-async def handle_participar_callback(q: types.CallbackQuery):
-    message = q.message
-    ans_text = f'<a href="tg://user?id={q.from_user.id}" >{q.from_user.first_name}</a> | #participar'
-    await bot.send_message(answerer_id, ans_text, parse_mode="HTML")
-
-    await bot.edit_message_text(
-        "¡Anotado! Ya estás en la lista.",
-        reply_markup=None,
-        chat_id=message.chat.id,
-        message_id=message.id,
-    )
-    await bot.answer_callback_query(q.id)
 
 
 @bot.inline_handler(lambda q: True)
