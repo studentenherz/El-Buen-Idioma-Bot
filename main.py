@@ -48,7 +48,7 @@ COMMANDS_TEXT = {
     "duda": "👨‍🏫 Si tienes una duda lingüística, plantéanosla en un solo mensaje. Al formularla, recuerda ofrecernos contexto y escribir la etiqueta #duda.",
     "sugerencia": "📝 Envíanos sugerencias para mejorar nuestro trabajo. Siempre serán bien recibidas. Redáctala en un solo mensaje y recuerda incluir la etiqueta #sugerencia.\n\n✍️ Puedes hacernos propuestas de temas para que nuestros panelistas de «Escriba y lea» los descrifren.",
     "ayuda": '📕 Este es nuestro <a href="https://telegra.ph/Vademécum-10-15">vademécum</a>, un libro de poco volumen y fácil manejo para conocer mejor qué es el proyecto @Buen_Idioma.',
-    "podcast": "🎧 En Anchor podrás escuchar todas las emisiones del pódcast «Píldoras Buen Idioma».",
+    "podcast": "🎧 En nuestra página podrás escuchar todas las emisiones del pódcast «Píldoras Buen Idioma».",
     "blog": "💻 En nuestro blog podrás encontrar recomendaciones lingüísticas sobre el uso correcto del español actual.",
 }
 
@@ -65,7 +65,8 @@ COMMANDS_MARKUP = {
         [
             [
                 types.InlineKeyboardButton(
-                    "🎧 Escuchar en Anchor", url="https://anchor.fm/buenidioma"
+                    "🎧 Escuchar en buenidioma.com",
+                    url="https://buenidioma.com/podcast/",
                 )
             ]
         ]
